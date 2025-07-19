@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 13.0px 'Helvetica Neue'; min-height: 15.0px}
+  </style>
+</head>
+<body>
+<p class="p1">import { useState } from 'react';</p>
+<p class="p1">import { StockSearch } from '@/components/StockSearch';</p>
+<p class="p1">import { AnalysisResults } from '@/components/AnalysisResults';</p>
+<p class="p1">import { Button } from '@/components/ui/button';</p>
+<p class="p1">import { BarChart3, Brain, Globe, TrendingUp, Shield, Zap } from 'lucide-react';</p>
+<p class="p1">import heroImage from '@/assets/hero-financial.jpg';</p>
+<p class="p2"><br></p>
+<p class="p1">const Index = () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const [selectedStock, setSelectedStock] = useState&lt;string | null&gt;(null);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const handleSearch = (query: string) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setSelectedStock(query.toUpperCase());</p>
+<p class="p1"><span class="Apple-converted-space">  </span>};</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>const features = [</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: Brain,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'AI-Powered Analysis',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Advanced machine learning algorithms analyze market patterns and predict movements',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: BarChart3,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'Technical Insights',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Professional-grade chart analysis with entry/exit points and risk management',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: Globe,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'Macro Intelligence',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Real-time integration of economic indicators and global market correlations',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: Shield,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'Risk Assessment',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Comprehensive risk-reward analysis with confidence scoring and scenario planning',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: TrendingUp,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'Multi-timeframe Forecasts',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Short-term (1-14 days) to long-term (1-5 years) price movement predictions',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">    </span>{</p>
+<p class="p1"><span class="Apple-converted-space">      </span>icon: Zap,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>title: 'Real-time Data',</p>
+<p class="p1"><span class="Apple-converted-space">      </span>description: 'Live NSE feeds with instant updates on price movements and market changes',</p>
+<p class="p1"><span class="Apple-converted-space">    </span>},</p>
+<p class="p1"><span class="Apple-converted-space">  </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div className="min-h-screen bg-background"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{!selectedStock ? (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>{/* Hero Section */}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;section className="relative bg-gradient-hero overflow-hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">              </span>className="absolute inset-0 opacity-20"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>style={{</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundImage: `url(${heroImage})`,</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundSize: 'cover',</p>
+<p class="p1"><span class="Apple-converted-space">                </span>backgroundPosition: 'center',</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="relative container mx-auto px-4 py-24 lg:py-32"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="max-w-4xl mx-auto text-center space-y-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Finlatics</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Advanced AI-powered financial research platform for Indian equity markets.<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Get professional-grade analysis across technical, fundamental, and macro dimensions.</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div className="space-y-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;StockSearch onSearch={handleSearch} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p className="text-sm text-muted-foreground"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Powered by real-time NSE data • Professional research tools • AI-driven insights</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>{/* Features Section */}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;section className="py-24 bg-background"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="container mx-auto px-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="max-w-6xl mx-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div className="text-center space-y-4 mb-16"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;h2 className="text-3xl md:text-4xl font-bold"&gt;Complete Market Research Suite&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;p className="text-xl text-muted-foreground max-w-3xl mx-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>Everything you need to make informed investment decisions in Indian equity markets</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>{features.map((feature, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const Icon = feature.icon;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>return (</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;div</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>key={index}</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>className="group p-6 rounded-xl border border-border bg-card hover:bg-accent/50 transition-all duration-300"</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div className="space-y-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;div className="p-3 rounded-lg bg-primary w-fit"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;Icon className="h-6 w-6 text-primary-foreground" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;h3 className="text-xl font-semibold"&gt;{feature.title}&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                          </span>&lt;p className="text-muted-foreground"&gt;{feature.description}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                      </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>);</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>})}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/section&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">          </span>{/* CTA Section */}</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;section className="py-24 bg-gradient-market"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div className="container mx-auto px-4 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;div className="max-w-3xl mx-auto space-y-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 className="text-3xl md:text-4xl font-bold text-foreground"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Start Your Professional Market Analysis</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p className="text-xl opacity-90"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Join thousands of traders and investors using AI-powered research for better investment decisions</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;Button</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>size="lg"</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>className="bg-background text-foreground hover:bg-background/90 text-lg px-8 py-6"</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>onClick={() =&gt; document.querySelector('input')?.focus()}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>Analyze Any NSE Stock</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/Button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/section&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>) : (</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div className="container mx-auto px-4 py-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;div className="mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;Button</p>
+<p class="p1"><span class="Apple-converted-space">              </span>variant="outline"</p>
+<p class="p1"><span class="Apple-converted-space">              </span>onClick={() =&gt; setSelectedStock(null)}</p>
+<p class="p1"><span class="Apple-converted-space">              </span>className="mb-4"</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&gt;</p>
+<p class="p1"><span class="Apple-converted-space">              </span>← Back to Search</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/Button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">          </span>&lt;AnalysisResults stockSymbol={selectedStock} /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>)}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>);</p>
+<p class="p1">};</p>
+<p class="p2"><br></p>
+<p class="p1">export default Index;</p>
+</body>
+</html>
