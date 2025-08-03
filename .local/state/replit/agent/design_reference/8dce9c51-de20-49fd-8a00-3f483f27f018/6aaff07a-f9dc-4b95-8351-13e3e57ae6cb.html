@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LucidQuant - Alternative Investment Signals</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    navy: '#0a0e27',
+                    teal: '#14b8a6',
+                    'warm-white': '#f8fafc',
+                },
+                fontFamily: {
+                    'inter': ['Inter', 'sans-serif'],
+                },
+                animation: {
+                    'float': 'float 3s ease-in-out infinite',
+                    'pulse-glow': 'pulse-glow 2s infinite',
+                    'fade-in-up': 'fade-in-up 0.6s ease-out',
+                    'fade-in-delay': 'fade-in-up 0.6s ease-out 0.2s both',
+                    'fade-in-delay-2': 'fade-in-up 0.6s ease-out 0.4s both',
+                    'fade-in-delay-3': 'fade-in-up 0.6s ease-out 0.6s both',
+                },
+                keyframes: {
+                    'float': {
+                        '0%, 100%': { transform: 'translateY(-20px)' },
+                        '50%': { transform: 'translateY(0)' }
+                    },
+                    'pulse-glow': {
+                        '0%, 100%': { opacity: '0', transform: 'scale(1)' },
+                        '50%': { opacity: '0.3', transform: 'scale(1.05)' }
+                    },
+                    'fade-in-up': {
+                        '0%': { opacity: '0', transform: 'translateY(30px)' },
+                        '100%': { opacity: '1', transform: 'translateY(0)' }
+                    }
+                }
+            }
+        }
+    };
+    </script>
+
+    <style>
+        /* Custom CSS for exact recreation */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0e27;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #14b8a6 0%, #f8fafc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0e27;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #14b8a6;
+            border-radius: 4px;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(20, 184, 166, 0.1);
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            border: 1px solid #14b8a6;
+            opacity: 0.2;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Button Styles */
+        .btn-ghost {
+            color: #f8fafc;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .btn-ghost:hover {
+            color: #14b8a6;
+        }
+
+        .btn-ghost:hover .arrow {
+            transform: translateX(8px);
+        }
+
+        .pulse-glow::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #14b8a6, transparent, #14b8a6);
+            border-radius: inherit;
+            opacity: 0;
+            animation: pulse-glow 2s infinite;
+            z-index: -1;
+        }
+
+        /* Offerings Sticky Scroll */
+        .offerings-container {
+            height: 400vh;
+            position: relative;
+        }
+
+        .offering-section {
+            position: sticky;
+            top: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0a0e27;
+            margin-top: -100vh;
+            transition: opacity 0.3s ease;
+        }
+
+        .offering-section:nth-child(2) { z-index: 3; }
+        .offering-section:nth-child(3) { z-index: 2; }
+        .offering-section:nth-child(4) { z-index: 1; }
+
+        /* Explore Split */
+        .explore-half {
+            transition: all 0.5s ease;
+        }
+
+        .explore-half:hover {
+            background-color: rgba(20, 184, 166, 0.05);
+            transform: scale(1.02);
+        }
+
+        .explore-half:hover .explore-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .explore-half:hover .explore-title {
+            color: #14b8a6;
+        }
+
+        /* Data Cards */
+        .data-card {
+            background: rgba(20, 184, 166, 0.05);
+            border: 1px solid rgba(20, 184, 166, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .data-card:hover {
+            background: rgba(20, 184, 166, 0.1);
+            border-color: rgba(20, 184, 166, 0.3);
+            transform: translateY(-4px);
+        }
+
+        /* Trend Indicators */
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        .trend-stable { color: #6b7280; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: #0a0e27;
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* Analysis Tools */
+        .stock-search {
+            background: rgba(20, 184, 166, 0.1);
+            border: 1px solid rgba(20, 184, 166, 0.2);
+            color: #f8fafc;
+            padding: 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .stock-search:focus {
+            outline: none;
+            border-color: #14b8a6;
+        }
+
+        .analyze-btn {
+            background: #14b8a6;
+            color: #0a0e27;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .analyze-btn:hover {
+            background: #0f9488;
+        }
+
+        /* Chart Placeholder */
+        .chart-placeholder {
+            background: rgba(20, 184, 166, 0.05);
+            border: 2px dashed rgba(20, 184, 166, 0.2);
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+        }
+
+        /* Page Specific Styles */
+        .page-header {
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .breadcrumb-link {
+            color: rgba(248, 250, 252, 0.6);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: #14b8a6;
+        }
+
+        /* Hide elements for SPA simulation */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- @COMPONENT: Navigation -->
+    <nav class="navbar fixed top-0 w-full z-50 py-4">
+        <div class="flex items-center justify-center w-full px-8">
+            <a href="#" class="text-2xl font-light tracking-widest text-warm-white hover:text-teal transition-colors" onclick="showPage('home')">
+                LucidQuant
+            </a>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page active">
+        <!-- @COMPONENT: Hero Section -->
+        <section class="min-h-screen flex items-center justify-center relative px-8 text-center">
+            <!-- Background overlay -->
+            <div class="absolute inset-0 opacity-10 bg-gradient-to-br from-teal/20 to-transparent"></div>
+            
+            <div class="max-w-6xl relative z-10">
+                <h1 class="text-5xl md:text-7xl font-extralight mb-8 tracking-wide animate-fade-in-up gradient-text">
+                    Crafted for the
+                </h1>
+                <h2 class="text-5xl md:text-7xl font-light mb-12 tracking-wide animate-fade-in-delay">
+                    Unconventional
+                </h2>
+                <p class="text-lg md:text-xl font-light text-warm-white/80 mb-16 max-w-3xl mx-auto animate-fade-in-delay-2">
+                    Discover investment signals that traditional platforms overlook. 
+                    Alternative indicators reveal market opportunities before they become mainstream knowledge.
+                </p>
+                <div class="animate-fade-in-delay-3">
+                    <button onclick="showPage('explore')" class="btn-ghost pulse-glow text-2xl md:text-3xl">
+                        <span>Explore</span>
+                        <i class="fas fa-arrow-right ml-4 arrow transition-transform duration-300"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Elements -->
+            <div class="floating-element w-24 h-24 rounded-full top-20 right-20 hidden md:block"></div>
+            <div class="floating-element w-16 h-16 rounded-lg transform rotate-45 bottom-32 left-16 hidden md:block" style="animation-delay: 1s;"></div>
+        </section>
+        <!-- @END_COMPONENT: Hero Section -->
+
+        <!-- @COMPONENT: Offerings Section - Layered Scroll -->
+        <div class="offerings-container" id="offerings-container">
+            <!-- Spacer -->
+            <div style="height: 100vh;"></div>
+            
+            <!-- First Offering -->
+            <section class="offering-section" data-offering="0">
+                <div class="max-w-4xl text-center px-8">
+                    <h2 class="text-4xl md:text-6xl font-light mb-8 tracking-wide">
+                        Act before it's everywhere
+                    </h2>
+                    <p class="text-lg md:text-xl font-light text-warm-white/80 max-w-3xl mx-auto">
+                        LucidQuant analyzes the data points everyone else overlooks. We find correlations in unexpected places and surface patterns before they become market consensus. Get early signals from sources others don't track.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Second Offering -->
+            <section class="offering-section" data-offering="1">
+                <div class="max-w-4xl text-center px-8">
+                    <h2 class="text-4xl md:text-6xl font-light mb-8 tracking-wide">
+                        Go beyond the usual checks
+                    </h2>
+                    <p class="text-lg md:text-xl font-light text-warm-white/80 max-w-3xl mx-auto">
+                        While others focus on earnings and price charts, we explore alternative indicators that might tell a different story. Discover unconventional metrics that could reveal new investment angles you hadn't considered.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Third Offering -->
+            <section class="offering-section" data-offering="2">
+                <div class="max-w-4xl text-center px-8">
+                    <h2 class="text-4xl md:text-6xl font-light mb-8 tracking-wide">
+                        Take the boldest risk reason allows
+                    </h2>
+                    <p class="text-lg md:text-xl font-light text-warm-white/80 max-w-3xl mx-auto">
+                        Smart risk isn't about gambling—it's about having better information. LucidQuant gives you the conviction to act on opportunities that appear risky to others. Make calculated moves with uncommon insight.
+                    </p>
+                </div>
+            </section>
+        </div>
+        <!-- @END_COMPONENT: Offerings Section -->
+
+        <!-- @COMPONENT: Signup Section -->
+        <section class="min-h-screen flex items-center justify-center px-8">
+            <div class="text-center">
+                <h2 class="text-5xl md:text-7xl font-light mb-12 tracking-wide animate-fade-in-up">
+                    Start Today
+                </h2>
+                <div class="animate-fade-in-delay">
+                    <button onclick="openSignUpModal()" class="btn-ghost pulse-glow text-2xl md:text-3xl">
+                        <span>Sign Up</span>
+                        <i class="fas fa-arrow-right ml-4 arrow transition-transform duration-300"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- @END_COMPONENT: Signup Section -->
+
+        <!-- @COMPONENT: Footer -->
+        <footer class="py-16 px-8 border-t border-teal/10">
+            <div class="max-w-7xl mx-auto text-center">
+                <div class="text-2xl font-light mb-8 tracking-wide">LucidQuant</div>
+                <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-12 mb-8">
+                    <a href="#" class="text-warm-white/60 hover:text-teal transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-warm-white/60 hover:text-teal transition-colors">Terms of Service</a>
+                    <a href="#" class="text-warm-white/60 hover:text-teal transition-colors">Contact</a>
+                </div>
+                <p class="text-warm-white/40 text-sm mt-8">© 2024 LucidQuant. All rights reserved.</p>
+            </div>
+        </footer>
+        <!-- @END_COMPONENT: Footer -->
+    </div>
+
+    <!-- EXPLORE PAGE -->
+    <div id="explore-page" class="page">
+        <!-- @COMPONENT: Page Logo -->
+        <div class="page-header">
+            <h1 class="text-3xl font-light tracking-widest">LucidQuant</h1>
+        </div>
+        <!-- @END_COMPONENT: Page Logo -->
+
+        <!-- @COMPONENT: Split View -->
+        <div class="flex flex-col md:flex-row" style="height: calc(100vh - 200px); min-height: 600px;">
+            <!-- Left Half - Indicators -->
+            <div class="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12 border-b md:border-b-0 md:border-r border-teal/10" onclick="showPage('indicators')">
+                <div class="text-center relative z-10">
+                    <div class="text-6xl text-teal mb-6 explore-icon transition-transform duration-300">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-light mb-4 tracking-wide explore-title transition-colors duration-500">
+                        Indicators
+                    </h2>
+                    <p class="text-warm-white/60 font-light max-w-sm mx-auto">
+                        Unconventional signals that reveal market opportunities before they become mainstream
+                    </p>
+                </div>
+                
+                <!-- Animated Background Pattern -->
+                <div class="absolute w-32 h-32 border border-teal rounded-full top-10 right-10 opacity-10 animate-float"></div>
+            </div>
+
+            <!-- Right Half - Metrics -->
+            <div class="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12" onclick="showPage('metrics')">
+                <div class="text-center relative z-10">
+                    <div class="text-6xl text-teal mb-6 explore-icon transition-transform duration-300">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-light mb-4 tracking-wide explore-title transition-colors duration-500">
+                        Metrics
+                    </h2>
+                    <p class="text-warm-white/60 font-light max-w-sm mx-auto">
+                        Alternative data points that traditional analysis overlooks, giving you the edge
+                    </p>
+                </div>
+                
+                <!-- Animated Background Pattern -->
+                <div class="absolute w-24 h-24 border border-teal rounded-lg transform rotate-45 bottom-10 left-10 opacity-10 animate-float" style="animation-delay: 1.5s;"></div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Split View -->
+    </div>
+
+    <!-- INDICATORS PAGE -->
+    <div id="indicators-page" class="page">
+        <!-- @COMPONENT: Page Header -->
+        <div class="page-header">
+            <div class="mb-4">
+                <a href="#" onclick="showPage('explore')" class="breadcrumb-link">← Back to Explore</a>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-light mb-4 tracking-wide">Indicators</h1>
+            <p class="text-lg text-warm-white/80 font-light">Unconventional signals that reveal market opportunities before they become mainstream</p>
+        </div>
+        <!-- @END_COMPONENT: Page Header -->
+
+        <!-- @COMPONENT: Indicators Grid -->
+        <div class="max-w-7xl mx-auto px-8 pb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-mock="true">
+                <!-- @MAP: indicators.map(indicator => ( -->
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(1)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Crypto Fear & Greed Index</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Market sentiment indicator based on volatility, trading volume, and social media analysis</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Sentiment</span>
+                        <span class="text-warm-white font-medium">78.4</span>
+                    </div>
+                    <div class="mt-4 text-teal opacity-0 transition-opacity group-hover:opacity-100">
+                        <span>Analyze →</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(2)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">VIX Futures Contango</h3>
+                        <span class="trend-indicator trend-down text-lg">↘</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Term structure of volatility expectations indicating market stress levels</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Volatility</span>
+                        <span class="text-warm-white font-medium">-2.1</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(3)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Dark Pool Activity</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Institutional trading activity in private exchanges away from public markets</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Institutional</span>
+                        <span class="text-warm-white font-medium">45.7</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(4)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Satellite Economic Data</h3>
+                        <span class="trend-indicator trend-stable text-lg">→</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Real-time economic activity measured through satellite imagery and IoT sensors</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Economic</span>
+                        <span class="text-warm-white font-medium">12.3</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(5)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Social Sentiment Analysis</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Aggregated sentiment from social media, news, and forum discussions</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Social</span>
+                        <span class="text-warm-white font-medium">67.8</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showIndicatorDetail(6)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Alternative Energy Index</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Clean energy adoption rates and investment flows globally</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">Energy</span>
+                        <span class="text-warm-white font-medium">89.2</span>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Indicators Grid -->
+    </div>
+
+    <!-- METRICS PAGE -->
+    <div id="metrics-page" class="page">
+        <!-- @COMPONENT: Page Header -->
+        <div class="page-header">
+            <div class="mb-4">
+                <a href="#" onclick="showPage('explore')" class="breadcrumb-link">← Back to Explore</a>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-light mb-4 tracking-wide">Metrics</h1>
+            <p class="text-lg text-warm-white/80 font-light">Alternative data points that traditional analysis overlooks, giving you the edge</p>
+        </div>
+        <!-- @END_COMPONENT: Page Header -->
+
+        <!-- @COMPONENT: Metrics Grid -->
+        <div class="max-w-7xl mx-auto px-8 pb-16">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-mock="true">
+                <!-- @MAP: metrics.map(metric => ( -->
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(1)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Insider Trading Volume</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Corporate insider buying and selling activity across market sectors</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">$2.4B</span>
+                        <span class="text-green-400 text-sm">+12.4%</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(2)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Promoter Holdings Change</h3>
+                        <span class="trend-indicator trend-down text-lg">↘</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Changes in promoter shareholding patterns indicating confidence levels</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">68.7%</span>
+                        <span class="text-red-400 text-sm">-3.2%</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(3)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Bulk Deal Activity</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Large block transactions indicating institutional sentiment shifts</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">847</span>
+                        <span class="text-green-400 text-sm">+8.9%</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(4)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Options Flow Patterns</h3>
+                        <span class="trend-indicator trend-stable text-lg">→</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Unusual options activity suggesting informed trading or hedging</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">1.24</span>
+                        <span class="text-gray-400 text-sm">0.0%</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(5)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Alternative Trading Volume</h3>
+                        <span class="trend-indicator trend-up text-lg">↗</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">Trading activity in cryptocurrency and alternative asset markets</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">$15.7B</span>
+                        <span class="text-green-400 text-sm">+24.6%</span>
+                    </div>
+                </div>
+
+                <div class="data-card rounded-xl p-6 cursor-pointer" onclick="showMetricDetail(6)">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-medium text-warm-white">Cross-Border Capital Flow</h3>
+                        <span class="trend-indicator trend-down text-lg">↘</span>
+                    </div>
+                    <p class="text-warm-white/70 mb-4 text-sm">International investment flows indicating global risk sentiment</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-warm-white font-medium">$8.9B</span>
+                        <span class="text-red-400 text-sm">-5.7%</span>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Metrics Grid -->
+    </div>
+
+    <!-- INDICATOR DETAIL PAGE -->
+    <div id="indicator-detail-page" class="page">
+        <!-- @COMPONENT: Indicator Detail -->
+        <div class="page-header">
+            <div class="mb-4">
+                <a href="#" onclick="showPage('indicators')" class="breadcrumb-link">← Back to Indicators</a>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-light mb-4 tracking-wide" id="indicator-title">Crypto Fear & Greed Index</h1>
+            <div class="flex items-center justify-center gap-6">
+                <span class="trend-indicator trend-up text-lg">↗ Trending Up</span>
+                <span class="text-2xl font-medium" id="indicator-value">78.4</span>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-8 pb-16 space-y-12">
+            <!-- Definition Section -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Definition</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 leading-relaxed" id="indicator-description">
+                        Market sentiment indicator based on volatility, trading volume, and social media analysis. This composite metric aggregates multiple data sources to provide a real-time assessment of market fear and greed levels.
+                    </p>
+                    <div class="mt-4">
+                        <span class="text-xs text-warm-white/50 bg-teal/20 px-3 py-1 rounded-full">Sentiment</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Trend Section -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Current Trend</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 leading-relaxed">
+                        Currently showing increased activity, suggesting positive market sentiment. This upward trend typically indicates growing investor confidence and potential opportunities in related sectors.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Investment Implications -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Investment Implications</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-6">
+                        <h4 class="text-lg font-medium mb-4 text-green-400">Bullish Indicators</h4>
+                        <ul class="space-y-2 text-warm-white/80 text-sm">
+                            <li>• Technology stocks</li>
+                            <li>• Growth companies</li>
+                            <li>• High-beta stocks</li>
+                            <li>• Emerging markets</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
+                        <h4 class="text-lg font-medium mb-4 text-red-400">Bearish Indicators</h4>
+                        <ul class="space-y-2 text-warm-white/80 text-sm">
+                            <li>• Defensive stocks</li>
+                            <li>• Utilities sector</li>
+                            <li>• Consumer staples</li>
+                            <li>• Government bonds</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <h4 class="text-lg font-medium mb-3">Reasoning</h4>
+                    <p class="text-warm-white/80 leading-relaxed">
+                        When this indicator shows up movement, it typically favors certain asset classes over others based on historical correlations and market behavior patterns.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stock Analysis Tool -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Analyze Stock</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 mb-4">Search for a stock to see how it correlates with this indicator</p>
+                    <div class="flex gap-4 mb-4">
+                        <input type="text" class="stock-search flex-1" placeholder="Enter stock symbol (e.g., AAPL, TSLA, NVDA)" id="stock-input" />
+                        <button class="analyze-btn" onclick="analyzeStock()">Analyze Stock</button>
+                    </div>
+                    <div id="analysis-result" class="hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-lg font-medium" id="stock-symbol"></h4>
+                            <span class="text-teal font-medium" id="correlation-score"></span>
+                        </div>
+                        <p class="text-warm-white/80" id="correlation-description"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Placeholder -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Live Trend Data</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <div class="flex gap-2 mb-6">
+                        <button class="px-4 py-2 text-sm bg-teal text-navy rounded-lg font-medium time-btn active" data-period="1M">1M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors time-btn" data-period="3M">3M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors time-btn" data-period="6M">6M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors time-btn" data-period="1Y">1Y</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors time-btn" data-period="2Y">2Y</button>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line text-4xl text-teal/50 mb-4"></i>
+                        <p class="text-warm-white/60">Chart visualization would display real financial data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Indicator Detail -->
+    </div>
+
+    <!-- METRIC DETAIL PAGE -->
+    <div id="metric-detail-page" class="page">
+        <!-- @COMPONENT: Metric Detail -->
+        <div class="page-header">
+            <div class="mb-4">
+                <a href="#" onclick="showPage('metrics')" class="breadcrumb-link">← Back to Metrics</a>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-light mb-4 tracking-wide" id="metric-title">Insider Trading Volume</h1>
+            <div class="flex items-center justify-center gap-6">
+                <span class="trend-indicator trend-up text-lg">↗ Trending Up</span>
+                <span class="text-2xl font-medium" id="metric-value">$2.4B</span>
+                <span class="text-green-400 text-lg">+12.4%</span>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-8 pb-16 space-y-12">
+            <!-- Definition Section -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Definition</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 leading-relaxed" id="metric-description">
+                        Corporate insider buying and selling activity across market sectors. This metric tracks when company executives, directors, and major shareholders trade their own company's stock, often indicating their confidence in future performance.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Current Trend Section -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Current Trend</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 leading-relaxed">
+                        Currently showing increased activity with a 12.4% change. This upward movement suggests heightened market participation and potential shifts in investor behavior.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Investment Implications -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Investment Implications</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-green-500/10 border border-green-500/20 rounded-xl p-6">
+                        <h4 class="text-lg font-medium mb-4 text-green-400">Positive Signals</h4>
+                        <ul class="space-y-2 text-warm-white/80 text-sm">
+                            <li>• Management confidence</li>
+                            <li>• Positive internal outlook</li>
+                            <li>• Aligned interests</li>
+                            <li>• Growth expectations</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
+                        <h4 class="text-lg font-medium mb-4 text-red-400">Cautionary Signals</h4>
+                        <ul class="space-y-2 text-warm-white/80 text-sm">
+                            <li>• Profit-taking activity</li>
+                            <li>• Personal liquidity needs</li>
+                            <li>• Market timing</li>
+                            <li>• Regulatory requirements</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <h4 class="text-lg font-medium mb-3">Reasoning</h4>
+                    <p class="text-warm-white/80 leading-relaxed">
+                        Changes in insider trading volume often reflect shifting market dynamics and can provide early signals of potential price movements and investment opportunities.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stock Analysis Tool -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Analyze Stock</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <p class="text-warm-white/80 mb-4">Search for a stock to see how it correlates with this metric</p>
+                    <div class="flex gap-4 mb-4">
+                        <input type="text" class="stock-search flex-1" placeholder="Enter stock symbol (e.g., AAPL, TSLA, NVDA)" id="metric-stock-input" />
+                        <button class="analyze-btn" onclick="analyzeMetricStock()">Analyze Stock</button>
+                    </div>
+                    <div id="metric-analysis-result" class="hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="text-lg font-medium" id="metric-stock-symbol"></h4>
+                            <span class="text-teal font-medium" id="metric-correlation-score"></span>
+                        </div>
+                        <p class="text-warm-white/80" id="metric-correlation-description"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Placeholder -->
+            <div class="space-y-4">
+                <h2 class="text-2xl font-light tracking-wide">Live Trend Data</h2>
+                <div class="bg-teal/5 border border-teal/10 rounded-xl p-6">
+                    <div class="flex gap-2 mb-6">
+                        <button class="px-4 py-2 text-sm bg-teal text-navy rounded-lg font-medium metric-time-btn active" data-period="1M">1M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors metric-time-btn" data-period="3M">3M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors metric-time-btn" data-period="6M">6M</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors metric-time-btn" data-period="1Y">1Y</button>
+                        <button class="px-4 py-2 text-sm text-warm-white/60 hover:text-warm-white transition-colors metric-time-btn" data-period="2Y">2Y</button>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-line text-4xl text-teal/50 mb-4"></i>
+                        <p class="text-warm-white/60">Chart visualization would display real financial data</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Metric Detail -->
+    </div>
+
+    <!-- @COMPONENT: Sign Up Modal -->
+    <div id="signUpModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-light tracking-wide">Join LucidQuant</h3>
+                <button onclick="closeSignUpModal()" class="text-2xl text-warm-white/60 hover:text-warm-white transition-colors">&times;</button>
+            </div>
+            <form onsubmit="handleSignup(event)">
+                <div class="mb-6">
+                    <label for="email" class="block text-sm font-medium mb-2 text-warm-white/80">Email Address</label>
+                    <input type="email" id="email" name="email" required class="stock-search" />
+                </div>
+                <button type="submit" class="w-full analyze-btn">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Sign Up Modal -->
+
+    <script>
+        // @FUNCTIONALITY: SPA Navigation System
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // @FUNCTIONALITY: Modal Management
+        function openSignUpModal() {
+            document.getElementById('signUpModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSignUpModal() {
+            document.getElementById('signUpModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('signUpModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSignUpModal();
+            }
+        });
+
+        // @FUNCTIONALITY: Form Handling
+        function handleSignup(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            // TODO: Implement real signup logic
+            alert(`Thank you for signing up with ${email}! We'll be in touch soon.`);
+            closeSignUpModal();
+            document.getElementById('email').value = '';
+        }
+
+        // @FUNCTIONALITY: Stock Analysis Tools
+        function analyzeStock() {
+            const stockSymbol = document.getElementById('stock-input').value.trim().toUpperCase();
+            
+            if (!stockSymbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+
+            // Mock correlation analysis
+            const correlations = ['Strong Positive', 'Moderate Positive', 'Weak Positive', 'Neutral', 'Weak Negative', 'Moderate Negative'];
+            const correlation = correlations[Math.floor(Math.random() * correlations.length)];
+            const score = (Math.random() * 100).toFixed(1);
+
+            const descriptions = {
+                'Strong Positive': `${stockSymbol} shows strong positive correlation with this indicator. When the indicator rises, ${stockSymbol} typically performs well.`,
+                'Moderate Positive': `${stockSymbol} shows moderate positive correlation. This indicator can provide useful signals for ${stockSymbol} movements.`,
+                'Weak Positive': `${stockSymbol} shows weak positive correlation. This indicator has limited predictive value for ${stockSymbol}.`,
+                'Neutral': `${stockSymbol} shows neutral correlation. This indicator does not significantly influence ${stockSymbol} performance.`,
+                'Weak Negative': `${stockSymbol} shows weak negative correlation. Inverse relationship with this indicator is minimal.`,
+                'Moderate Negative': `${stockSymbol} shows moderate negative correlation. When this indicator rises, ${stockSymbol} may face headwinds.`
+            };
+
+            // Update result display
+            document.getElementById('stock-symbol').textContent = stockSymbol;
+            document.getElementById('correlation-score').textContent = `${score}% ${correlation}`;
+            document.getElementById('correlation-description').textContent = descriptions[correlation];
+            document.getElementById('analysis-result').classList.remove('hidden');
+        }
+
+        function analyzeMetricStock() {
+            const stockSymbol = document.getElementById('metric-stock-input').value.trim().toUpperCase();
+            
+            if (!stockSymbol) {
+                alert('Please enter a stock symbol');
+                return;
+            }
+
+            // Mock correlation analysis for metrics
+            const correlations = ['Strong Positive', 'Moderate Positive', 'Weak Positive', 'Neutral', 'Weak Negative', 'Moderate Negative'];
+            const correlation = correlations[Math.floor(Math.random() * correlations.length)];
+            const score = (Math.random() * 100).toFixed(1);
+
+            const descriptions = {
+                'Strong Positive': `${stockSymbol} shows strong positive correlation with insider trading volume. High insider activity often precedes ${stockSymbol} price movements.`,
+                'Moderate Positive': `${stockSymbol} shows moderate correlation. Insider trading patterns can provide useful signals for ${stockSymbol} investment decisions.`,
+                'Weak Positive': `${stockSymbol} shows weak correlation with insider trading volume. This metric has limited predictive value for ${stockSymbol}.`,
+                'Neutral': `${stockSymbol} shows neutral correlation. Insider trading volume does not significantly influence ${stockSymbol} performance.`,
+                'Weak Negative': `${stockSymbol} shows weak negative correlation. Inverse relationship with insider trading is minimal.`,
+                'Moderate Negative': `${stockSymbol} shows moderate negative correlation. High insider selling may indicate caution for ${stockSymbol}.`
+            };
+
+            // Update result display
+            document.getElementById('metric-stock-symbol').textContent = stockSymbol;
+            document.getElementById('metric-correlation-score').textContent = `${score}% ${correlation}`;
+            document.getElementById('metric-correlation-description').textContent = descriptions[correlation];
+            document.getElementById('metric-analysis-result').classList.remove('hidden');
+        }
+
+        // @FUNCTIONALITY: Detail Page Navigation
+        function showIndicatorDetail(id) {
+            // Mock data for different indicators
+            const indicators = {
+                1: {
+                    title: 'Crypto Fear & Greed Index',
+                    value: '78.4',
+                    description: 'Market sentiment indicator based on volatility, trading volume, and social media analysis. This composite metric aggregates multiple data sources to provide a real-time assessment of market fear and greed levels.'
+                },
+                2: {
+                    title: 'VIX Futures Contango',
+                    value: '-2.1',
+                    description: 'Term structure of volatility expectations indicating market stress levels. Measures the relationship between near-term and longer-term volatility expectations.'
+                },
+                3: {
+                    title: 'Dark Pool Activity',
+                    value: '45.7',
+                    description: 'Institutional trading activity in private exchanges away from public markets. High dark pool activity often indicates large institutional positioning.'
+                }
+            };
+
+            const indicator = indicators[id] || indicators[1];
+            document.getElementById('indicator-title').textContent = indicator.title;
+            document.getElementById('indicator-value').textContent = indicator.value;
+            document.getElementById('indicator-description').textContent = indicator.description;
+            
+            showPage('indicator-detail');
+        }
+
+        function showMetricDetail(id) {
+            // Mock data for different metrics
+            const metrics = {
+                1: {
+                    title: 'Insider Trading Volume',
+                    value: '$2.4B',
+                    description: 'Corporate insider buying and selling activity across market sectors. This metric tracks when company executives, directors, and major shareholders trade their own company\'s stock, often indicating their confidence in future performance.'
+                },
+                2: {
+                    title: 'Promoter Holdings Change',
+                    value: '68.7%',
+                    description: 'Changes in promoter shareholding patterns indicating confidence levels. Tracks how company promoters adjust their ownership stakes over time.'
+                },
+                3: {
+                    title: 'Bulk Deal Activity',
+                    value: '847',
+                    description: 'Large block transactions indicating institutional sentiment shifts. Monitors significant trading blocks that may signal major position changes.'
+                }
+            };
+
+            const metric = metrics[id] || metrics[1];
+            document.getElementById('metric-title').textContent = metric.title;
+            document.getElementById('metric-value').textContent = metric.value;
+            document.getElementById('metric-description').textContent = metric.description;
+            
+            showPage('metric-detail');
+        }
+
+        // @FUNCTIONALITY: Chart Time Period Selection
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize time button handlers for indicators
+            const timeButtons = document.querySelectorAll('.time-btn');
+            timeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    timeButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-teal', 'text-navy');
+                        btn.classList.add('text-warm-white/60');
+                    });
+                    this.classList.add('active', 'bg-teal', 'text-navy');
+                    this.classList.remove('text-warm-white/60');
+                    
+                    // TODO: Update chart data based on selected period
+                    console.log(`Chart updated to show ${this.dataset.period} data`);
+                });
+            });
+
+            // Initialize time button handlers for metrics
+            const metricTimeButtons = document.querySelectorAll('.metric-time-btn');
+            metricTimeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    metricTimeButtons.forEach(btn => {
+                        btn.classList.remove('active', 'bg-teal', 'text-navy');
+                        btn.classList.add('text-warm-white/60');
+                    });
+                    this.classList.add('active', 'bg-teal', 'text-navy');
+                    this.classList.remove('text-warm-white/60');
+                    
+                    // TODO: Update chart data based on selected period
+                    console.log(`Metric chart updated to show ${this.dataset.period} data`);
+                });
+            });
+
+            // @FUNCTIONALITY: Scroll-based animations for offerings
+            initializeOfferingsScroll();
+        });
+
+        // @FUNCTIONALITY: Offerings Scroll Animation
+        function initializeOfferingsScroll() {
+            const offeringsContainer = document.getElementById('offerings-container');
+            const offeringSections = document.querySelectorAll('.offering-section');
+            
+            if (offeringsContainer && offeringSections.length > 0) {
+                window.addEventListener('scroll', function() {
+                    const containerRect = offeringsContainer.getBoundingClientRect();
+                    const containerHeight = offeringsContainer.offsetHeight;
+                    const viewportHeight = window.innerHeight;
+                    
+                    // Calculate scroll progress within the container (0 to 1)
+                    const scrollProgress = Math.max(0, Math.min(1, 
+                        (viewportHeight - containerRect.top) / (containerHeight - viewportHeight)
+                    ));
+                    
+                    // Update offering opacities based on scroll progress
+                    offeringSections.forEach((section, index) => {
+                        const sectionStart = index / offeringSections.length;
+                        const sectionEnd = (index + 1) / offeringSections.length;
+                        
+                        let opacity = 0;
+                        
+                        if (scrollProgress >= sectionStart && scrollProgress <= sectionEnd) {
+                            // Current section is visible
+                            const sectionProgress = (scrollProgress - sectionStart) / (sectionEnd - sectionStart);
+                            opacity = 1;
+                            
+                            // Fade out as we approach the end of this section
+                            if (sectionProgress > 0.8) {
+                                opacity = 1 - ((sectionProgress - 0.8) / 0.2);
+                            }
+                        } else if (scrollProgress > sectionEnd) {
+                            // Section has passed
+                            opacity = 0;
+                        } else {
+                            // Section hasn't started yet
+                            opacity = 0;
+                        }
+                        
+                        section.style.opacity = opacity;
+                    });
+                });
+                
+                // Initialize first section as visible
+                offeringSections[0].style.opacity = 1;
+                offeringSections.forEach((section, index) => {
+                    if (index > 0) {
+                        section.style.opacity = 0;
+                    }
+                });
+            }
+        }
+
+        // @FUNCTIONALITY: Email Validation
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // @FUNCTIONALITY: Smooth Scroll Behavior
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Initialize intersection observer for animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe elements for scroll animations
+            const animateElements = document.querySelectorAll('.data-card');
+            animateElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+
+        // @FUNCTIONALITY: Keyboard Navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('signUpModal');
+                if (modal.style.display === 'flex') {
+                    closeSignUpModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
