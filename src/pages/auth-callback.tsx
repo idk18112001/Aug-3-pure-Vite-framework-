@@ -10,7 +10,8 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        // Handle the auth callback from URL hash/query params
+        const { data, error } = await supabase.auth.getUser();
         
         if (error) {
           console.error('Auth error:', error);
@@ -23,18 +24,24 @@ export default function AuthCallback() {
           return;
         }
 
-        if (data.session) {
+        if (data.user) {
           toast({
             title: "Welcome to LucidQuant!",
-            description: "You've been successfully signed in.",
+            description: `Successfully signed in as ${data.user.email}`,
           });
-          // Redirect to dashboard or home
+          // Redirect to home page
           setLocation('/');
         } else {
+          // No user found, redirect to home
           setLocation('/');
         }
       } catch (error) {
         console.error('Unexpected error:', error);
+        toast({
+          title: "Authentication Error",
+          description: "Something went wrong during sign-in",
+          variant: "destructive",
+        });
         setLocation('/');
       }
     };
