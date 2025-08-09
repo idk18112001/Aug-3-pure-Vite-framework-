@@ -8,10 +8,10 @@ export default function Explore() {
       
 
       {/* Split View */}
-      <div className="flex flex-col md:flex-row" style={{ height: 'calc(100vh - 200px)', minHeight: '600px' }}>
+      <div className="flex flex-col md:flex-row min-h-screen">
         {/* Left Half - Indicators */}
         <div 
-          className="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12 border-b md:border-b-0 md:border-r border-teal/10" 
+          className="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12 border-b md:border-b-0 md:border-r border-teal/10 min-h-[50vh] md:min-h-screen" 
           onClick={() => setLocation('/indicators')}
         >
           <div className="text-center relative z-10">
@@ -32,7 +32,7 @@ export default function Explore() {
 
         {/* Right Half - Metrics */}
         <div 
-          className="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12" 
+          className="explore-half flex-1 cursor-pointer relative overflow-hidden flex items-center justify-center p-12 min-h-[50vh] md:min-h-screen" 
           onClick={() => setLocation('/metrics')}
         >
           <div className="text-center relative z-10">
