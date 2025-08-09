@@ -61,7 +61,7 @@ export default function UserAvatar({ user, hasNotifications = false }: UserAvata
       {/* Avatar Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="w-10 h-10 rounded-full bg-teal hover:bg-teal/80 text-navy font-semibold text-sm transition-colors flex items-center justify-center relative"
+        className="w-12 h-12 rounded-full bg-teal hover:bg-teal/80 text-navy font-semibold text-lg transition-colors flex items-center justify-center relative"
       >
         {getInitials(user.email || '', user.user_metadata?.full_name)}
         
