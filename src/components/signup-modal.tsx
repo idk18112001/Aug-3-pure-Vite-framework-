@@ -56,7 +56,7 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     setIsLoading(true);
     
     try {
-      // Use our custom Google OAuth flow instead of Supabase's
+      // Use our custom Google OAuth flow - will use production domain when deployed
       window.location.href = '/auth/google';
     } catch (error: any) {
       console.error('Google OAuth error:', error);
