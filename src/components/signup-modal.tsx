@@ -56,18 +56,13 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) throw error;
+      // Use our custom Google OAuth flow instead of Supabase's
+      window.location.href = '/auth/google';
     } catch (error: any) {
+      console.error('Google OAuth error:', error);
       toast({
         title: "Error",
-        description: error.message || "Something went wrong",
+        description: "Failed to start Google authentication",
         variant: "destructive",
       });
       setIsLoading(false);
