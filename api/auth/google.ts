@@ -44,7 +44,8 @@ export default async function handler(req: any, res: any) {
     console.log('Environment check:', {
       hasClientId: !!process.env.GOOGLE_CLIENT_ID,
       hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-      nodeEnv: process.env.NODE_ENV
+      nodeEnv: process.env.NODE_ENV,
+      timestamp: new Date().toISOString()
     });
 
     if (!process.env.GOOGLE_CLIENT_ID) {
