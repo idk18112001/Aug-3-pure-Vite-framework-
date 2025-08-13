@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { indicators } from "@/data/indicators";
 import { useScrollAnimations } from "@/hooks/use-scroll-animations";
-import AuthGuard from "@/components/auth-guard";
+import AuthGuard from "../components/auth-guard";
 
 export default function Indicators() {
   const [, setLocation] = useLocation();

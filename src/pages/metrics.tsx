@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { metrics } from "@/data/metrics";
 import { useScrollAnimations } from "@/hooks/use-scroll-animations";
-import AuthGuard from "@/components/auth-guard";
+import AuthGuard from "../components/auth-guard";
 
 export default function Metrics() {
   const [, setLocation] = useLocation();
