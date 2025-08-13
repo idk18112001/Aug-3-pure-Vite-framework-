@@ -14,10 +14,12 @@ export default function AuthCallback() {
         const currentUrl = window.location.href;
         console.log('Auth callback URL:', currentUrl);
 
-        // Check for error parameters in URL
+        // Check for error parameters in both URL query and hash
         const urlParams = new URLSearchParams(window.location.search);
-        const errorParam = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        
+        const errorParam = urlParams.get('error') || hashParams.get('error');
+        const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
         
         if (errorParam) {
           console.error('Auth error from URL:', errorParam, errorDescription);
@@ -41,9 +43,46 @@ export default function AuthCallback() {
           return;
         }
 
-        // Handle the auth session from URL hash/query params
+        // Let Supabase handle the auth session from URL hash/query params
         const { data, error } = await supabase.auth.getSession();
-        
+        console.log('Session check result:', { data: data.session?.user?.email, error });
+
+        // If no session yet, try to exchange the URL tokens
+        if (!data.session && (window.location.hash || window.location.search.includes('access_token'))) {
+          console.log('No session found, attempting to exchange tokens from URL');
+          
+          // Wait a moment for Supabase to process the URL
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Check session again
+          const { data: newData, error: newError } = await supabase.auth.getSession();
+          console.log('Second session check:', { data: newData.session?.user?.email, error: newError });
+          
+          if (newData.session?.user) {
+            console.log('✅ User successfully authenticated:', newData.session.user.email);
+            toast({
+              title: "Welcome to LucidQuant!",
+              description: `Successfully signed in as ${newData.session.user.email}`,
+            });
+            
+            // Clean URL and redirect to home page
+            window.history.replaceState({}, document.title, '/');
+            setLocation('/');
+            return;
+          }
+        } else if (data.session?.user) {
+          console.log('✅ User already authenticated:', data.session.user.email);
+          toast({
+            title: "Welcome back!",
+            description: `Signed in as ${data.session.user.email}`,
+          });
+          
+          // Clean URL and redirect to home page
+          window.history.replaceState({}, document.title, '/');
+          setLocation('/');
+          return;
+        }
+
         if (error) {
           console.error('Session error:', error);
           toast({
@@ -51,29 +90,14 @@ export default function AuthCallback() {
             description: error.message,
             variant: "destructive",
           });
-          
-          // Clean URL and redirect
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
-          return;
-        }
-
-        if (data.session?.user) {
-          console.log('✅ User successfully authenticated:', data.session.user.email);
-          toast({
-            title: "Welcome to LucidQuant!",
-            description: `Successfully signed in as ${data.session.user.email}`,
-          });
-          
-          // Clean URL and redirect to home page
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
         } else {
           console.log('No active session found, redirecting to home');
-          // Clean URL and redirect to home
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
         }
+        
+        // Clean URL and redirect to home
+        window.history.replaceState({}, document.title, '/');
+        setLocation('/');
+        
       } catch (error) {
         console.error('Unexpected error:', error);
         toast({

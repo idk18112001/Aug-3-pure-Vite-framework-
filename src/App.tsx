@@ -5,6 +5,7 @@ import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { useState, useEffect } from "react";
 import { useToast } from "./hooks/use-toast";
+import { supabase } from "./supabase-client";
 
 import Navbar from "./components/navbar";
 import SignupModal from "./components/signup-modal";
@@ -23,8 +24,29 @@ function Router() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const { toast } = useToast();
 
-  // Handle auth errors on any page
+  // Initialize Supabase auth and handle auth state globally
   useEffect(() => {
+    // Initialize auth session on app load
+    const initializeAuth = async () => {
+      try {
+        // Check if there are auth tokens in the URL
+        const hasAuthTokens = window.location.hash.includes('access_token') || 
+                            window.location.search.includes('access_token');
+        
+        if (hasAuthTokens) {
+          console.log('Auth tokens detected in URL, processing...');
+          // Let Supabase handle the auth flow
+          const { data, error } = await supabase.auth.getSession();
+          console.log('Auth initialization result:', { user: data.session?.user?.email, error });
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      }
+    };
+
+    initializeAuth();
+
+    // Handle auth errors on any page
     const handleAuthErrors = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
