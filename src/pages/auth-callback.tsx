@@ -43,41 +43,88 @@ export default function AuthCallback() {
           return;
         }
 
-        // Let Supabase handle the auth session from URL hash/query params
-        const { data, error } = await supabase.auth.getSession();
-        console.log('Session check result:', { data: data.session?.user?.email, error });
+        // Check if we have auth tokens in the URL (from magic link or OAuth)
+        const hasAccessToken = window.location.hash.includes('access_token') || 
+                              window.location.search.includes('access_token');
+        const hasCode = urlParams.get('code'); // OAuth code
 
-        // If no session yet, try to exchange the URL tokens
-        if (!data.session && (window.location.hash || window.location.search.includes('access_token'))) {
-          console.log('No session found, attempting to exchange tokens from URL');
+        if (hasAccessToken || hasCode) {
+          console.log('Auth tokens detected, processing...', { hasAccessToken, hasCode });
           
-          // Wait a moment for Supabase to process the URL
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Check session again
-          const { data: newData, error: newError } = await supabase.auth.getSession();
-          console.log('Second session check:', { data: newData.session?.user?.email, error: newError });
-          
-          if (newData.session?.user) {
-            console.log('✅ User successfully authenticated:', newData.session.user.email);
-            toast({
-              title: "Welcome to LucidQuant!",
-              description: `Successfully signed in as ${newData.session.user.email}`,
-            });
+          try {
+            // For magic links (access_token in hash)
+            if (hasAccessToken) {
+              // Extract tokens from URL hash
+              const hashTokens = new URLSearchParams(window.location.hash.substring(1));
+              const accessToken = hashTokens.get('access_token');
+              const refreshToken = hashTokens.get('refresh_token');
+              
+              if (accessToken) {
+                console.log('Setting session with access token');
+                const { data, error } = await supabase.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken || '',
+                });
+                
+                if (error) throw error;
+                
+                if (data.session?.user) {
+                  console.log('✅ User successfully authenticated via magic link:', data.session.user.email);
+                  toast({
+                    title: "Welcome to LucidQuant!",
+                    description: `Successfully signed in as ${data.session.user.email}`,
+                  });
+                  
+                  // Clean URL and redirect
+                  window.history.replaceState({}, document.title, '/');
+                  setLocation('/');
+                  return;
+                }
+              }
+            }
             
-            // Clean URL and redirect to home page
-            window.history.replaceState({}, document.title, '/');
-            setLocation('/');
-            return;
+            // For OAuth (code in query params)
+            if (hasCode) {
+              console.log('Processing OAuth code');
+              const { data, error } = await supabase.auth.exchangeCodeForSession(hasCode);
+              
+              if (error) throw error;
+              
+              if (data.session?.user) {
+                console.log('✅ User successfully authenticated via OAuth:', data.session.user.email);
+                toast({
+                  title: "Welcome to LucidQuant!",
+                  description: `Successfully signed in as ${data.session.user.email}`,
+                });
+                
+                // Clean URL and redirect
+                window.history.replaceState({}, document.title, '/');
+                setLocation('/');
+                return;
+              }
+            }
+          } catch (authError) {
+            console.error('Token processing error:', authError);
+            toast({
+              title: "Authentication Error",
+              description: "Failed to process authentication tokens",
+              variant: "destructive",
+            });
           }
-        } else if (data.session?.user) {
+        }
+
+        // Check if user is already authenticated
+        const { data, error } = await supabase.auth.getSession();
+        console.log('Final session check:', { user: data.session?.user?.email, error });
+
+        if (data.session?.user) {
           console.log('✅ User already authenticated:', data.session.user.email);
           toast({
             title: "Welcome back!",
             description: `Signed in as ${data.session.user.email}`,
           });
           
-          // Clean URL and redirect to home page
+          // Clean URL and redirect
           window.history.replaceState({}, document.title, '/');
           setLocation('/');
           return;
