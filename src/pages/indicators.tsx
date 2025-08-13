@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { indicators } from "@/data/indicators";
 import { useScrollAnimations } from "@/hooks/use-scroll-animations";
+import AuthGuard from "@/components/auth-guard";
 
 export default function Indicators() {
   const [, setLocation] = useLocation();
@@ -23,7 +24,7 @@ export default function Indicators() {
     }
   };
 
-  return (
+  const content = (
     <div>
       {/* Page Header */}
       <div className="page-header">
@@ -69,5 +70,11 @@ export default function Indicators() {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <AuthGuard>
+      {content}
+    </AuthGuard>
   );
 }

@@ -1,6 +1,7 @@
 import { useLocation } from "wouter";
 import { metrics } from "@/data/metrics";
 import { useScrollAnimations } from "@/hooks/use-scroll-animations";
+import AuthGuard from "@/components/auth-guard";
 
 export default function Metrics() {
   const [, setLocation] = useLocation();
@@ -29,7 +30,7 @@ export default function Metrics() {
     return 'text-gray-400';
   };
 
-  return (
+  const content = (
     <div>
       {/* Page Header */}
       <div className="page-header">
@@ -75,5 +76,11 @@ export default function Metrics() {
         </div>
       </div>
     </div>
+  );
+
+  return (
+    <AuthGuard>
+      {content}
+    </AuthGuard>
   );
 }
