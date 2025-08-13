@@ -3,7 +3,8 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useToast } from "./hooks/use-toast";
 
 import Navbar from "./components/navbar";
 import SignupModal from "./components/signup-modal";
@@ -20,6 +21,42 @@ import NotFound from "./pages/not-found";
 
 function Router() {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  // Handle auth errors on any page
+  useEffect(() => {
+    const handleAuthErrors = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      
+      const errorParam = urlParams.get('error') || hashParams.get('error');
+      const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
+      
+      if (errorParam) {
+        console.log('Auth error detected:', errorParam, errorDescription);
+        
+        let errorMessage = "Authentication failed";
+        if (errorParam === 'access_denied') {
+          errorMessage = "Access was denied. Please try again.";
+        } else if (errorParam === 'auth_failed') {
+          errorMessage = "Authentication failed. Please try again.";
+        } else if (errorDescription) {
+          errorMessage = errorDescription.replace(/\+/g, ' ');
+        }
+        
+        toast({
+          title: "Authentication Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        
+        // Clean the URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    };
+
+    handleAuthErrors();
+  }, [toast]);
 
   return (
     <div className="min-h-screen">

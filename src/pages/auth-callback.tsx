@@ -10,29 +10,68 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Handle the auth callback from URL hash/query params
-        const { data, error } = await supabase.auth.getUser();
+        // Get the current URL to check for auth parameters
+        const currentUrl = window.location.href;
+        console.log('Auth callback URL:', currentUrl);
+
+        // Check for error parameters in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
         
-        if (error) {
-          console.error('Auth error:', error);
+        if (errorParam) {
+          console.error('Auth error from URL:', errorParam, errorDescription);
+          
+          let errorMessage = "Authentication failed";
+          if (errorParam === 'access_denied') {
+            errorMessage = "Access was denied. Please try again.";
+          } else if (errorDescription) {
+            errorMessage = errorDescription.replace(/\+/g, ' ');
+          }
+          
           toast({
             title: "Authentication Error",
-            description: error.message,
+            description: errorMessage,
             variant: "destructive",
           });
+          
+          // Clean URL and redirect
+          window.history.replaceState({}, document.title, '/');
           setLocation('/');
           return;
         }
 
-        if (data.user) {
+        // Handle the auth session from URL hash/query params
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          toast({
+            title: "Authentication Error", 
+            description: error.message,
+            variant: "destructive",
+          });
+          
+          // Clean URL and redirect
+          window.history.replaceState({}, document.title, '/');
+          setLocation('/');
+          return;
+        }
+
+        if (data.session?.user) {
+          console.log('✅ User successfully authenticated:', data.session.user.email);
           toast({
             title: "Welcome to LucidQuant!",
-            description: `Successfully signed in as ${data.user.email}`,
+            description: `Successfully signed in as ${data.session.user.email}`,
           });
-          // Redirect to home page
+          
+          // Clean URL and redirect to home page
+          window.history.replaceState({}, document.title, '/');
           setLocation('/');
         } else {
-          // No user found, redirect to home
+          console.log('No active session found, redirecting to home');
+          // Clean URL and redirect to home
+          window.history.replaceState({}, document.title, '/');
           setLocation('/');
         }
       } catch (error) {
@@ -42,6 +81,9 @@ export default function AuthCallback() {
           description: "Something went wrong during sign-in",
           variant: "destructive",
         });
+        
+        // Clean URL and redirect
+        window.history.replaceState({}, document.title, '/');
         setLocation('/');
       }
     };
