@@ -64,8 +64,15 @@ export default async function handler(req: any, res: any) {
 
     const { data } = await handleGoogleCallback(code as string);
     
-    // Redirect to our auth callback page to handle the session properly
-    res.redirect('/auth/callback?oauth=success');
+    // Redirect to auth callback with the session tokens in the URL
+    // This allows the frontend to establish the session properly
+    if (data.session) {
+      const { access_token, refresh_token } = data.session;
+      const redirectUrl = `/auth/callback#access_token=${access_token}&refresh_token=${refresh_token}&type=recovery&oauth=success`;
+      res.redirect(redirectUrl);
+    } else {
+      res.redirect('/auth/callback?oauth=success');
+    }
     
   } catch (error) {
     console.error('Google OAuth callback error:', error);

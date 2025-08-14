@@ -47,40 +47,76 @@ export default function AuthCallback() {
         const oauthSuccess = urlParams.get('oauth');
         
         if (oauthSuccess === 'success') {
-          console.log('OAuth success detected, checking session...');
+          console.log('Custom OAuth success detected, processing tokens...');
           
-          // Check if user is already authenticated after custom OAuth
-          const { data, error } = await supabase.auth.getSession();
-          console.log('OAuth session check:', { user: data.session?.user?.email, error });
-
-          if (data.session?.user) {
-            console.log('✅ User successfully authenticated via custom OAuth:', data.session.user.email);
-            toast({
-              title: "Welcome to LucidQuant!",
-              description: `Successfully signed in as ${data.session.user.email}`,
-            });
-            
-            // Clean URL and redirect
-            window.history.replaceState({}, document.title, '/');
-            setLocation('/');
-            return;
+          // Check if we have tokens in the URL hash from custom OAuth
+          const hashTokens = new URLSearchParams(window.location.hash.substring(1));
+          const accessToken = hashTokens.get('access_token');
+          const refreshToken = hashTokens.get('refresh_token');
+          
+          if (accessToken) {
+            console.log('Setting session with custom OAuth tokens');
+            try {
+              const { data, error } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken || '',
+              });
+              
+              if (error) throw error;
+              
+              if (data.session?.user) {
+                console.log('✅ User successfully authenticated via custom OAuth:', data.session.user.email);
+                toast({
+                  title: "Welcome to LucidQuant!",
+                  description: `Successfully signed in as ${data.session.user.email}`,
+                });
+                
+                // Clean URL and redirect
+                window.history.replaceState({}, document.title, '/');
+                setLocation('/');
+                return;
+              }
+            } catch (authError) {
+              console.error('Custom OAuth token processing error:', authError);
+              toast({
+                title: "Authentication Error",
+                description: "Failed to process OAuth tokens",
+                variant: "destructive",
+              });
+            }
           } else {
-            // If no session yet, wait a moment and try again
-            console.log('No session found after OAuth, retrying...');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            const { data: retryData, error: retryError } = await supabase.auth.getSession();
-            if (retryData.session?.user) {
-              console.log('✅ User authenticated after retry:', retryData.session.user.email);
+            // Fallback: check if session was already established
+            const { data, error } = await supabase.auth.getSession();
+            console.log('Fallback OAuth session check:', { user: data.session?.user?.email, error });
+
+            if (data.session?.user) {
+              console.log('✅ User authenticated via fallback session check:', data.session.user.email);
               toast({
                 title: "Welcome to LucidQuant!",
-                description: `Successfully signed in as ${retryData.session.user.email}`,
+                description: `Successfully signed in as ${data.session.user.email}`,
               });
               
               // Clean URL and redirect
               window.history.replaceState({}, document.title, '/');
               setLocation('/');
               return;
+            } else {
+              console.log('No session found after custom OAuth, retrying...');
+              await new Promise(resolve => setTimeout(resolve, 2000));
+              
+              const { data: retryData, error: retryError } = await supabase.auth.getSession();
+              if (retryData.session?.user) {
+                console.log('✅ User authenticated after retry:', retryData.session.user.email);
+                toast({
+                  title: "Welcome to LucidQuant!",
+                  description: `Successfully signed in as ${retryData.session.user.email}`,
+                });
+                
+                // Clean URL and redirect
+                window.history.replaceState({}, document.title, '/');
+                setLocation('/');
+                return;
+              }
             }
           }
         }
