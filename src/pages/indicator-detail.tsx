@@ -4,12 +4,14 @@ import { indicators } from "@/data/indicators";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StockSearch from "@/components/stock-search";
+import IndicatorChart from "@/components/indicator-chart";
 import AuthGuard from "../components/auth-guard";
 
 export default function IndicatorDetail() {
   const [, setLocation] = useLocation();
   const { id } = useParams();
   const [activePeriod, setActivePeriod] = useState("1M");
+  const [analyzedSymbol, setAnalyzedSymbol] = useState<string>("");
 
   const indicator = indicators.find(ind => ind.id === parseInt(id || '1')) || indicators[0];
   
@@ -174,7 +176,10 @@ export default function IndicatorDetail() {
               Analyze any stock in real-time using our comprehensive API integration. 
               Get bullish/bearish probabilities based on {indicator.title.toLowerCase()} and other market indicators.
             </p>
-            <StockSearch indicators={selectedIndicators} />
+            <StockSearch 
+              indicators={selectedIndicators} 
+              onSymbolAnalyzed={setAnalyzedSymbol}
+            />
           </div>
         </div>
 
@@ -197,10 +202,11 @@ export default function IndicatorDetail() {
                 </button>
               ))}
             </div>
-            <div className="chart-placeholder">
-              <i className="fas fa-chart-line text-4xl text-teal/50 mb-4"></i>
-              <p className="text-warm-white/60">Chart visualization would display real financial data</p>
-            </div>
+            <IndicatorChart 
+              symbol={analyzedSymbol}
+              indicatorName={indicator.title}
+              period={activePeriod}
+            />
           </div>
         </div>
       </div>

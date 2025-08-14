@@ -21,9 +21,10 @@ interface MarketAnalysis {
 
 interface StockSearchProps {
   indicators?: string[];
+  onSymbolAnalyzed?: (symbol: string) => void;
 }
 
-export default function StockSearch({ indicators = ['cpi', 'insider-activity'] }: StockSearchProps) {
+export default function StockSearch({ indicators = ['cpi', 'insider-activity'], onSymbolAnalyzed }: StockSearchProps) {
   const [symbol, setSymbol] = useState('');
   const [analysis, setAnalysis] = useState<MarketAnalysis | null>(null);
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,12 @@ export default function StockSearch({ indicators = ['cpi', 'insider-activity'] }
     try {
       const result = await analyzeStock(symbol.trim().toUpperCase());
       setAnalysis(result);
+      
+      // Notify parent component about the analyzed symbol
+      if (onSymbolAnalyzed) {
+        onSymbolAnalyzed(result.symbol);
+      }
+      
       toast({
         title: "Analysis Complete",
         description: `Successfully analyzed ${result.symbol}`,
@@ -75,7 +82,7 @@ export default function StockSearch({ indicators = ['cpi', 'insider-activity'] }
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
           onKeyPress={handleKeyPress}
-          className="flex-1 bg-navy/50 border-teal/20 text-warm-white placeholder:text-warm-white/40 focus:border-teal/40"
+          className="flex-1 bg-white/10 border-teal/30 text-white placeholder:text-white/60 focus:border-teal focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-teal/20"
         />
         <Button 
           onClick={handleAnalyze}

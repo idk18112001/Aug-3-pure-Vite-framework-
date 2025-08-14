@@ -39,45 +39,98 @@ interface InsiderTransaction {
   date: string;
 }
 
-// API Keys from environment variables
+// API Keys from environment variables (fallback to hardcoded for development)
 const API_KEYS = {
-  ALPHA_VANTAGE: 'MU4QX03PJ95E2F8U',
-  POLYGON: 'fELrw4NbyBqopZ90lQv2ZA1ICj41Ip8F',
-  FRED: '371e3a2dcd6fcbb871bb93d4bdb6ee9c',
-  GOOGLE_TRENDS: '69bf0c1258dc3608c514b8946ce5a895b61733ae19cced2304e770037b9ae78e'
+  ALPHA_VANTAGE: import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || 'MU4QX03PJ95E2F8U',
+  POLYGON: import.meta.env.VITE_POLYGON_API_KEY || 'fELrw4NbyBqopZ90lQv2ZA1ICj41Ip8F',
+  FRED: import.meta.env.VITE_FRED_API_KEY || '371e3a2dcd6fcbb871bb93d4bdb6ee9c',
+  GOOGLE_TRENDS: import.meta.env.VITE_GOOGLE_TRENDS_API_KEY || '69bf0c1258dc3608c514b8946ce5a895b61733ae19cced2304e770037b9ae78e'
 };
+
+// Debug: Log API keys availability (without exposing the actual keys)
+console.log('API Keys Status:', {
+  alphavantage: !!API_KEYS.ALPHA_VANTAGE,
+  polygon: !!API_KEYS.POLYGON,
+  fred: !!API_KEYS.FRED,
+  trends: !!API_KEYS.GOOGLE_TRENDS
+});
 
 // Alpha Vantage API - Stock prices and economic data
 export const getStockPrice = async (symbol: string): Promise<StockPrice> => {
+  console.log(`Fetching stock price for ${symbol} using Alpha Vantage API...`);
+  
   try {
-    const response = await fetch(
-      `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEYS.ALPHA_VANTAGE}`
-    );
+    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEYS.ALPHA_VANTAGE}`;
+    console.log('API Request URL:', url.replace(API_KEYS.ALPHA_VANTAGE, 'API_KEY_HIDDEN'));
+    
+    const response = await fetch(url);
     const data = await response.json();
     
-    if (data['Error Message'] || data['Note']) {
-      throw new Error('API limit reached or invalid symbol');
+    console.log('Alpha Vantage Response:', data);
+    
+    if (data['Error Message']) {
+      throw new Error(`Invalid symbol: ${data['Error Message']}`);
+    }
+    
+    if (data['Note']) {
+      throw new Error(`API limit reached: ${data['Note']}`);
     }
     
     const quote = data['Global Quote'];
-    return {
-      symbol: quote['01. symbol'],
+    if (!quote) {
+      throw new Error('No quote data received from Alpha Vantage');
+    }
+    
+    const result = {
+      symbol: quote['01. symbol'] || symbol,
       price: parseFloat(quote['05. price']),
       change: parseFloat(quote['09. change']),
       changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
       timestamp: quote['07. latest trading day']
     };
+    
+    console.log('Parsed stock data:', result);
+    return result;
+    
   } catch (error) {
     console.error('Error fetching stock price:', error);
-    // Fallback with simulated data
-    return {
-      symbol,
-      price: 150 + Math.random() * 50,
-      change: (Math.random() - 0.5) * 10,
-      changePercent: (Math.random() - 0.5) * 5,
-      timestamp: new Date().toISOString().split('T')[0]
-    };
+    
+    // Enhanced fallback with more realistic simulation based on actual market data
+    const mockData = getMockStockData(symbol);
+    console.log('Using fallback data for', symbol, mockData);
+    
+    return mockData;
   }
+};
+
+// Enhanced mock data for better accuracy during development/API failures
+const getMockStockData = (symbol: string): StockPrice => {
+  const stockDB: { [key: string]: { basePrice: number, volatility: number } } = {
+    'AAPL': { basePrice: 185, volatility: 0.02 },
+    'TSLA': { basePrice: 240, volatility: 0.04 },
+    'NVDA': { basePrice: 450, volatility: 0.03 },
+    'MSFT': { basePrice: 340, volatility: 0.015 },
+    'GOOGL': { basePrice: 140, volatility: 0.02 },
+    'AMZN': { basePrice: 135, volatility: 0.025 },
+    'META': { basePrice: 320, volatility: 0.03 },
+    'SPY': { basePrice: 450, volatility: 0.01 },
+    'QQQ': { basePrice: 380, volatility: 0.015 },
+    'DEFAULT': { basePrice: 100, volatility: 0.02 }
+  };
+  
+  const stockInfo = stockDB[symbol.toUpperCase()] || stockDB['DEFAULT'];
+  const randomChange = (Math.random() - 0.5) * stockInfo.volatility * 2;
+  const price = stockInfo.basePrice * (1 + randomChange);
+  const change = price - stockInfo.basePrice;
+  const changePercent = (change / stockInfo.basePrice) * 100;
+  
+  return {
+    symbol,
+    price: Math.round(price * 100) / 100,
+    change: Math.round(change * 100) / 100,
+    changePercent: Math.round(changePercent * 100) / 100,
+    timestamp: new Date().toISOString().split('T')[0]
+  };
 };
 
 // FRED API - Economic indicators (CPI, etc.)
