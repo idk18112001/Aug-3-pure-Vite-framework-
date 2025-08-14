@@ -40,31 +40,45 @@ export default function Indicators() {
         <p className="text-lg text-warm-white/80 font-light">Unconventional signals that reveal market opportunities before they become mainstream</p>
       </div>
 
-      {/* Indicators Grid */}
-      <div className="max-w-7xl mx-auto px-8 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {indicators.map((indicator) => (
-            <div 
-              key={indicator.id}
-              className="data-card rounded-xl p-6 cursor-pointer group" 
-              onClick={() => setLocation(`/indicator/${indicator.id}`)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-medium text-warm-white">{indicator.title}</h3>
-                <span className={`trend-indicator ${getTrendClass(indicator.trend)} text-lg`}>
-                  {getTrendIcon(indicator.trend)}
-                </span>
+      {/* Indicators List */}
+      <div className="max-w-4xl mx-auto px-8 pb-16">
+        <div className="space-y-8">
+          {indicators.map((indicator, index) => (
+            <div key={indicator.id}>
+              <div 
+                className="py-6 px-6 cursor-pointer group transition-all duration-300 hover:bg-warm-white/5 hover:backdrop-blur-sm rounded-lg" 
+                onClick={() => setLocation(`/indicator/${indicator.id}`)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-2xl font-light text-warm-white group-hover:text-teal transition-colors duration-300">
+                    {indicator.title}
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <span className={`trend-indicator ${getTrendClass(indicator.trend)} text-xl`}>
+                      {getTrendIcon(indicator.trend)}
+                    </span>
+                    <span className="text-warm-white font-medium text-xl">{indicator.value}</span>
+                  </div>
+                </div>
+                
+                <p className="text-warm-white/70 mb-4 text-base leading-relaxed max-w-3xl">
+                  {indicator.description}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-warm-white/60 bg-teal/20 px-3 py-1.5 rounded-full">
+                    {indicator.category}
+                  </span>
+                  <div className="text-teal opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-2">
+                    <span className="text-sm font-medium">Analyze →</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-warm-white/70 mb-4 text-sm">{indicator.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-warm-white/50 bg-teal/20 px-2 py-1 rounded">
-                  {indicator.category}
-                </span>
-                <span className="text-warm-white font-medium">{indicator.value}</span>
-              </div>
-              <div className="mt-4 text-teal opacity-0 transition-opacity group-hover:opacity-100">
-                <span>Analyze →</span>
-              </div>
+              
+              {/* Subtle divider - only show between items, not after the last one */}
+              {index < indicators.length - 1 && (
+                <div className="h-px bg-gradient-to-r from-transparent via-warm-white/10 to-transparent"></div>
+              )}
             </div>
           ))}
         </div>

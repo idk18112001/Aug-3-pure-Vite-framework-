@@ -46,31 +46,56 @@ export default function Metrics() {
         <p className="text-lg text-warm-white/80 font-light">Alternative data points that traditional analysis overlooks, giving you the edge</p>
       </div>
 
-      {/* Metrics Grid */}
-      <div className="max-w-7xl mx-auto px-8 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {metrics.map((metric) => (
-            <div 
-              key={metric.id}
-              className="data-card rounded-xl p-6 cursor-pointer group" 
-              onClick={() => setLocation(`/metric/${metric.id}`)}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-medium text-warm-white">{metric.title}</h3>
-                <span className={`trend-indicator ${getTrendClass(metric.trend)} text-lg`}>
-                  {getTrendIcon(metric.trend)}
-                </span>
+      {/* Metrics List */}
+      <div className="max-w-4xl mx-auto px-8 pb-16">
+        <div className="space-y-8">
+          {metrics.map((metric, index) => (
+            <div key={metric.id}>
+              <div 
+                className="py-6 px-6 cursor-pointer group transition-all duration-300 hover:bg-warm-white/5 hover:backdrop-blur-sm rounded-lg" 
+                onClick={() => setLocation(`/metric/${metric.id}`)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-2xl font-light text-warm-white group-hover:text-teal transition-colors duration-300">
+                    {metric.title}
+                  </h3>
+                  <div className="flex items-center gap-4">
+                    <span className={`trend-indicator ${getTrendClass(metric.trend)} text-xl`}>
+                      {getTrendIcon(metric.trend)}
+                    </span>
+                    <div className="text-right">
+                      <div className="text-warm-white font-medium text-xl">{metric.value}</div>
+                      <div className={`text-sm ${getChangeClass(metric.change)}`}>
+                        {metric.change}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <p className="text-warm-white/70 mb-4 text-base leading-relaxed max-w-3xl">
+                  {metric.description}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  {metric.hasToggle && (
+                    <div className="flex gap-2">
+                      {metric.toggleOptions?.map((option, idx) => (
+                        <span key={idx} className="text-xs text-warm-white/60 bg-teal/20 px-2 py-1 rounded-full">
+                          {option}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="text-teal opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-2 ml-auto">
+                    <span className="text-sm font-medium">Analyze →</span>
+                  </div>
+                </div>
               </div>
-              <p className="text-warm-white/70 mb-4 text-sm">{metric.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-warm-white font-medium">{metric.value}</span>
-                <span className={`text-sm ${getChangeClass(metric.change)}`}>
-                  {metric.change}
-                </span>
-              </div>
-              <div className="mt-4 text-teal opacity-0 transition-opacity group-hover:opacity-100">
-                <span>Analyze →</span>
-              </div>
+              
+              {/* Subtle divider - only show between items, not after the last one */}
+              {index < metrics.length - 1 && (
+                <div className="h-px bg-gradient-to-r from-transparent via-warm-white/10 to-transparent"></div>
+              )}
             </div>
           ))}
         </div>
