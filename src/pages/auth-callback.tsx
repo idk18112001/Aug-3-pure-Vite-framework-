@@ -13,8 +13,6 @@ export function AuthCallback() {
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get('error');
         const message = urlParams.get('message');
-        const tokenHash = urlParams.get('token_hash');
-        const type = urlParams.get('type');
 
         if (error) {
           console.error('Auth callback error:', error, message);
@@ -27,43 +25,14 @@ export function AuthCallback() {
           return;
         }
 
-        // Handle custom OAuth magic link token
-        if (tokenHash && type === 'magiclink') {
-          console.log('Processing custom OAuth magic link...');
-          
-          const { data, error: verifyError } = await supabase.auth.verifyOtp({
-            token_hash: tokenHash,
-            type: 'magiclink'
-          });
-
-          if (verifyError) {
-            console.error('Magic link verification failed:', verifyError);
-            toast({
-              variant: "destructive",
-              title: "Authentication Failed",
-              description: "Failed to verify authentication token",
-            });
-            navigate("/");
-            return;
-          }
-
-          console.log('Custom OAuth authentication successful:', data.user?.email);
-          toast({
-            title: "Welcome!",
-            description: "Successfully signed in with Google",
-          });
-          navigate("/");
-          return;
-        }
-
-        // Handle standard Supabase OAuth callback
+        // Handle Supabase OAuth callback - let Supabase handle everything
         const { data, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
           console.error('Session retrieval error:', sessionError);
           toast({
             variant: "destructive",
-            title: "Authentication Error",
+            title: "Authentication Error", 
             description: "Failed to retrieve user session",
           });
           navigate("/");

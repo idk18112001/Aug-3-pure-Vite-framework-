@@ -56,26 +56,19 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     setIsLoading(true);
     
     try {
-      // Use custom Google OAuth for LucidQuant branding
-      const response = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Use Supabase's built-in Google OAuth - simple and reliable
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to initiate Google OAuth');
+      if (error) {
+        throw error;
       }
 
-      const { authUrl } = await response.json();
-      
-      if (authUrl) {
-        window.location.href = authUrl;
-      } else {
-        throw new Error('No auth URL received');
-      }
-
+      // The redirect will happen automatically
       console.log('Google OAuth initiated successfully');
     } catch (error: any) {
       console.error('Google OAuth error:', error);
