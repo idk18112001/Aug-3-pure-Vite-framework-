@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 import { analyzeStock } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
@@ -76,13 +75,14 @@ export default function StockSearch({ indicators = ['cpi', 'insider-activity'], 
     <div className="space-y-6">
       {/* Search Input */}
       <div className="flex gap-3">
-        <Input
+        <input
           type="text"
-          placeholder="Enter stock symbol (e.g., AAPL, TSLA, NVDA)"
+          placeholder="Stock Symbol (AAPL, TSLA, etc.)"
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          onKeyPress={handleKeyPress}
-          className="flex-1 bg-white/10 border-teal/30 text-white placeholder:text-white/60 focus:border-teal focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-teal/20"
+          onKeyDown={handleKeyPress}
+          className="w-48 h-10 px-3 py-2 rounded-md border-2 bg-white border-teal/40 text-gray-900 placeholder-gray-500 focus:border-teal focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal/30 font-medium text-sm"
+          maxLength={15}
         />
         <Button 
           onClick={handleAnalyze}
