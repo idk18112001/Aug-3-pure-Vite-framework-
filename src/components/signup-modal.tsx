@@ -52,29 +52,21 @@ export default function SignupModal({ isOpen, onClose }: SignupModalProps) {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+    const handleGoogleSignIn = async () => {
     setIsLoading(true);
     
     try {
-      // Use Supabase's built-in Google OAuth
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      // The redirect will happen automatically, so we don't need to do anything else
-      console.log('Google OAuth initiated successfully');
+      // Use custom Google OAuth flow to show lucidquant.in in consent screen
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? 'https://lucidquant.in' 
+        : window.location.origin;
+      
+      window.location.href = `${baseUrl}/api/auth/google`;
     } catch (error: any) {
       console.error('Google OAuth error:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to start Google authentication",
+        description: "Failed to start Google authentication",
         variant: "destructive",
       });
       setIsLoading(false);

@@ -9,7 +9,7 @@ const supabase = createClient(
 const oauth2Client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.NODE_ENV === 'production' ? 'https://lucidquant.in' : 'http://localhost:3001'}/api/auth/google/callback`
+  `${process.env.NODE_ENV === 'production' ? 'https://lucidquant.in' : 'http://localhost:3000'}/api/auth/google/callback`
 );
 
 async function handleGoogleCallback(code: string) {
