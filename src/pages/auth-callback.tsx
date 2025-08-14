@@ -43,6 +43,48 @@ export default function AuthCallback() {
           return;
         }
 
+        // Check for OAuth success parameter (from custom OAuth flow)
+        const oauthSuccess = urlParams.get('oauth');
+        
+        if (oauthSuccess === 'success') {
+          console.log('OAuth success detected, checking session...');
+          
+          // Check if user is already authenticated after custom OAuth
+          const { data, error } = await supabase.auth.getSession();
+          console.log('OAuth session check:', { user: data.session?.user?.email, error });
+
+          if (data.session?.user) {
+            console.log('✅ User successfully authenticated via custom OAuth:', data.session.user.email);
+            toast({
+              title: "Welcome to LucidQuant!",
+              description: `Successfully signed in as ${data.session.user.email}`,
+            });
+            
+            // Clean URL and redirect
+            window.history.replaceState({}, document.title, '/');
+            setLocation('/');
+            return;
+          } else {
+            // If no session yet, wait a moment and try again
+            console.log('No session found after OAuth, retrying...');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const { data: retryData, error: retryError } = await supabase.auth.getSession();
+            if (retryData.session?.user) {
+              console.log('✅ User authenticated after retry:', retryData.session.user.email);
+              toast({
+                title: "Welcome to LucidQuant!",
+                description: `Successfully signed in as ${retryData.session.user.email}`,
+              });
+              
+              // Clean URL and redirect
+              window.history.replaceState({}, document.title, '/');
+              setLocation('/');
+              return;
+            }
+          }
+        }
+
         // Check if we have auth tokens in the URL (from magic link or OAuth)
         const hasAccessToken = window.location.hash.includes('access_token') || 
                               window.location.search.includes('access_token');
