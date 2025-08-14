@@ -2,17 +2,31 @@ import { useState } from "react";
 import { useLocation, useParams } from "wouter";
 import { metrics } from "@/data/metrics";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import StockSearch from "@/components/stock-search";
+import AuthGuard from "../components/auth-guard";
 
 export default function MetricDetail() {
   const [, setLocation] = useLocation();
   const { id } = useParams();
-  const [stockInput, setStockInput] = useState("");
-  const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [activePeriod, setActivePeriod] = useState("1M");
-  const [activeToggle, setActiveToggle] = useState("50 Day Average");
+  const [activeToggle, setActiveToggle] = useState("Short Interest %");
 
   const metric = metrics.find(met => met.id === parseInt(id || '1')) || metrics[0];
+  
+  // Get metric-specific analysis parameters
+  const getMetricAnalysisParams = (metricId: number): string[] => {
+    switch (metricId) {
+      case 1: // Insider Activity
+        return ['insider-activity'];
+      case 2: // Bulk/Block Deals
+        return ['bulk-deals', 'institutional-activity'];
+      case 3: // NSE F&O Data
+        return ['fo-data', 'options-flow'];
+      default:
+        return ['insider-activity', 'institutional-activity'];
+    }
+  };
+
+  const selectedIndicators = getMetricAnalysisParams(metric.id);
 
   const analyzeStock = () => {
     if (!stockInput.trim()) {
@@ -98,17 +112,18 @@ export default function MetricDetail() {
   };
 
   return (
-    <div>
-      {/* Page Header */}
-      <div className="page-header">
-        <div className="mb-4">
-          <button 
-            onClick={() => setLocation('/metrics')} 
-            className="breadcrumb-link"
-          >
-            ← Back to Metrics
-          </button>
-        </div>
+    <AuthGuard>
+      <div>
+        {/* Page Header */}
+        <div className="page-header">
+          <div className="mb-4">
+            <button 
+              onClick={() => setLocation('/metrics')} 
+              className="breadcrumb-link"
+            >
+              ← Back to Metrics
+            </button>
+          </div>
         <h1 className="text-4xl md:text-5xl font-light mb-4 tracking-wide">{metric.title}</h1>
         {metric.hasToggle && metric.toggleOptions && (
           <div className="flex justify-center gap-2 mb-6">
@@ -251,50 +266,7 @@ export default function MetricDetail() {
         {/* Stock Analysis Tool */}
         <div className="space-y-4">
           <h2 className="text-2xl font-light tracking-wide">Analyze Stock</h2>
-          <div className="bg-teal/5 border border-teal/10 rounded-xl p-6">
-            <p className="text-warm-white/80 mb-4">Search for a stock to see how it correlates with this metric</p>
-            <div className="flex gap-4 mb-4">
-              <Input
-                type="text"
-                className="stock-search flex-1"
-                placeholder="Enter stock symbol (e.g., AAPL, TSLA, NVDA)"
-                value={stockInput}
-                onChange={(e) => setStockInput(e.target.value)}
-              />
-              <Button className="analyze-btn" onClick={analyzeStock}>
-                Analyze Stock
-              </Button>
-            </div>
-            {analysisResult && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-lg font-medium">{analysisResult.symbol}</h4>
-                  <div className="flex gap-4 items-center">
-                    <span className="text-teal font-medium">{analysisResult.score}</span>
-                    <span className={`px-2 py-1 rounded text-xs ${
-                      analysisResult.recommendation === 'High Activity' ? 'bg-green-500/20 text-green-400' :
-                      analysisResult.recommendation === 'Moderate Activity' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-400'
-                    }`}>
-                      {analysisResult.recommendation}
-                    </span>
-                  </div>
-                </div>
-                <p className="text-warm-white/80 leading-relaxed">{analysisResult.description}</p>
-                <div className="flex items-center gap-4 text-sm text-warm-white/60">
-                  {analysisResult.activity && <span>Activity Level: {analysisResult.activity}</span>}
-                  {analysisResult.period && (
-                    <>
-                      <span>•</span>
-                      <span>Period: {analysisResult.period}</span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <span>Analysis based on {metric.title}</span>
-                </div>
-              </div>
-            )}
-          </div>
+          <StockSearch selectedIndicators={selectedIndicators} />
         </div>
 
         {/* Chart Placeholder */}
@@ -323,6 +295,7 @@ export default function MetricDetail() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
