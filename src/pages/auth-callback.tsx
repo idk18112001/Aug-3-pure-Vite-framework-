@@ -1,92 +1,107 @@
-import { useEffect } from 'react';
-import { useLocation } from 'wouter';
-import { supabase } from '../supabase-client';
-import { useToast } from '../hooks/use-toast';
+import { useEffect } from "react";
+import { useLocation } from "wouter";
+import { supabase } from "../supabase-client";
+import { useToast } from "../hooks/use-toast";
 
-export default function AuthCallback() {
-  const [, setLocation] = useLocation();
+export function AuthCallback() {
+  const [, navigate] = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get the current URL to check for auth parameters
-        const currentUrl = window.location.href;
-        console.log('Auth callback URL:', currentUrl);
-
-        // Check for error parameters in both URL query and hash
         const urlParams = new URLSearchParams(window.location.search);
-        const hashParams = new URLSearchParams(window.location.hash.substring(1));
-        
-        const errorParam = urlParams.get('error') || hashParams.get('error');
-        const errorDescription = urlParams.get('error_description') || hashParams.get('error_description');
-        
-        if (errorParam) {
-          console.error('Auth error from URL:', errorParam, errorDescription);
-          
-          let errorMessage = "Authentication failed";
-          if (errorParam === 'access_denied') {
-            errorMessage = "Access was denied. Please try again.";
-          } else if (errorDescription) {
-            errorMessage = errorDescription.replace(/\+/g, ' ');
-          }
-          
+        const error = urlParams.get('error');
+        const message = urlParams.get('message');
+        const tokenHash = urlParams.get('token_hash');
+        const type = urlParams.get('type');
+
+        if (error) {
+          console.error('Auth callback error:', error, message);
           toast({
-            title: "Authentication Error",
-            description: errorMessage,
             variant: "destructive",
+            title: "Authentication Failed",
+            description: message || `Authentication error: ${error}`,
           });
-          
-          // Clean URL and redirect
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
+          navigate("/");
           return;
         }
 
-        // Handle Supabase OAuth callback - let Supabase handle everything
-        const { data, error } = await supabase.auth.getSession();
-        console.log('Session check result:', { user: data.session?.user?.email, error });
+        // Handle custom OAuth magic link token
+        if (tokenHash && type === 'magiclink') {
+          console.log('Processing custom OAuth magic link...');
+          
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: 'magiclink'
+          });
+
+          if (verifyError) {
+            console.error('Magic link verification failed:', verifyError);
+            toast({
+              variant: "destructive",
+              title: "Authentication Failed",
+              description: "Failed to verify authentication token",
+            });
+            navigate("/");
+            return;
+          }
+
+          console.log('Custom OAuth authentication successful:', data.user?.email);
+          toast({
+            title: "Welcome!",
+            description: "Successfully signed in with Google",
+          });
+          navigate("/");
+          return;
+        }
+
+        // Handle standard Supabase OAuth callback
+        const { data, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session retrieval error:', sessionError);
+          toast({
+            variant: "destructive",
+            title: "Authentication Error",
+            description: "Failed to retrieve user session",
+          });
+          navigate("/");
+          return;
+        }
 
         if (data.session?.user) {
-          console.log('✅ User successfully authenticated:', data.session.user.email);
+          console.log('Authentication successful:', data.session.user.email);
           toast({
-            title: "Welcome to LucidQuant!",
-            description: `Successfully signed in as ${data.session.user.email}`,
+            title: "Welcome!",
+            description: "Successfully signed in",
           });
-          
-          // Clean URL and redirect to home page
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
-        } else {
-          console.log('No active session found, redirecting to home');
-          // Clean URL and redirect to home
-          window.history.replaceState({}, document.title, '/');
-          setLocation('/');
         }
-        
-      } catch (error) {
-        console.error('Unexpected error:', error);
+
+        navigate("/");
+
+      } catch (error: any) {
+        console.error('Auth callback processing error:', error);
         toast({
-          title: "Authentication Error",
-          description: "Something went wrong during sign-in",
           variant: "destructive",
+          title: "Authentication Error",
+          description: "An unexpected error occurred during authentication",
         });
-        
-        // Clean URL and redirect
-        window.history.replaceState({}, document.title, '/');
-        setLocation('/');
+        navigate("/");
       }
     };
 
     handleAuthCallback();
-  }, [setLocation, toast]);
+  }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen bg-navy flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal mx-auto mb-4"></div>
-        <p className="text-warm-white">Completing sign-in...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Completing authentication...</p>
       </div>
     </div>
   );
 }
+
+export default AuthCallback;

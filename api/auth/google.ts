@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 
-// Ensure environment variables are available
+// Google OAuth credentials for LucidQuant branding
 const clientId = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -15,16 +15,16 @@ if (!clientId || !clientSecret) {
 const oauth2Client = new OAuth2Client(
   clientId,
   clientSecret,
-  `${process.env.NODE_ENV === 'production' ? 'https://lucidquant.in' : 'http://localhost:3000'}/api/auth/google/callback`
+  `${process.env.NODE_ENV === 'production' ? 'https://lucidquant.in' : 'http://localhost:5173'}/api/auth/callback/google`
 );
 
 async function initiateGoogleAuth() {
   const scopes = [
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
-    'openid'
   ];
 
+  // Generate auth URL with LucidQuant branding
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: scopes,
@@ -35,33 +35,34 @@ async function initiateGoogleAuth() {
 }
 
 export default async function handler(req: any, res: any) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // Debug environment variables
-    console.log('Environment check:', {
+    console.log('Google OAuth setup check:', {
       hasClientId: !!process.env.GOOGLE_CLIENT_ID,
       hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-      nodeEnv: process.env.NODE_ENV,
-      timestamp: new Date().toISOString()
+      nodeEnv: process.env.NODE_ENV
     });
 
     if (!process.env.GOOGLE_CLIENT_ID) {
       return res.status(500).json({ 
         error: 'Google Client ID not configured',
-        debug: 'GOOGLE_CLIENT_ID environment variable is missing'
+        debug: process.env.NODE_ENV === 'development' ? 'Check GOOGLE_CLIENT_ID in .env' : undefined
       });
     }
 
     const authUrl = await initiateGoogleAuth();
-    res.redirect(302, authUrl);
-  } catch (error) {
-    console.error('Google auth initiation error:', error);
-    res.status(500).json({ 
-      error: 'Failed to initiate Google authentication',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    
+    console.log('Generated auth URL for LucidQuant OAuth');
+    return res.status(200).json({ authUrl });
+    
+  } catch (error: any) {
+    console.error('Google OAuth initiation error:', error);
+    return res.status(500).json({ 
+      error: 'Failed to initiate Google OAuth',
+      message: error.message 
     });
   }
 }

@@ -1,12 +1,20 @@
 {
+  "functions": {
+    "api/auth/google.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "api/auth/callback/google.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "rewrites": [
     {
-      "source": "/auth/google",
+      "source": "/api/auth/google",
       "destination": "/api/auth/google"
     },
     {
-      "source": "/auth/google/callback",
-      "destination": "/api/auth/google/callback"
+      "source": "/api/auth/callback/google",
+      "destination": "/api/auth/callback/google"
     },
     {
       "source": "/(.*)",
