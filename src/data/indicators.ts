@@ -13,17 +13,6 @@ export interface Indicator {
 export const indicators: Indicator[] = [
   {
     id: 1,
-    title: 'VIX Fear Index',
-    value: '22.5',
-    description: 'Market volatility and fear sentiment analysis',
-    trend: 'stable',
-    category: 'Sentiment',
-    detailedDescription: 'The VIX, or Volatility Index, measures the market\'s expectation of 30-day volatility. Often called the "fear gauge," it spikes during market uncertainty and drops during calm periods. Values above 30 typically indicate high fear, while below 20 suggests complacency.',
-    country: 'United States',
-    unit: 'Index'
-  },
-  {
-    id: 2,
     title: 'Baltic Dry Index',
     value: '1245.0',
     description: 'Global shipping rates as economic indicator',
@@ -34,7 +23,7 @@ export const indicators: Indicator[] = [
     unit: 'Index'
   },
   {
-    id: 3,
+    id: 2,
     title: 'Insider Trading Patterns',
     value: '89.2',
     description: 'Corporate insider buying and selling activity',
@@ -45,29 +34,18 @@ export const indicators: Indicator[] = [
     unit: 'Index'
   },
   {
-    id: 4,
-    title: 'Consumer Confidence',
-    value: '105.3',
-    description: 'Consumer confidence index and sentiment',
-    trend: 'stable',
-    category: 'Economic',
-    detailedDescription: 'Measures consumer attitudes regarding economic conditions and their willingness to spend money. Values above 100 indicate optimism, below 100 suggest pessimism.',
-    country: 'United States',
-    unit: 'Index'
-  },
-  {
-    id: 5,
-    title: 'Manufacturing PMI',
-    value: '52.1',
-    description: 'Manufacturing purchasing managers index',
+    id: 3,
+    title: 'Consumer Price Index',
+    value: '3.2%',
+    description: 'Inflation rate and cost of living changes',
     trend: 'up',
     category: 'Economic',
-    detailedDescription: 'The Manufacturing Purchasing Managers Index indicates the economic health of the manufacturing sector. Values above 50 indicate expansion, below 50 suggest contraction.',
+    detailedDescription: 'The Consumer Price Index measures changes in the price level of consumer goods and services purchased by households. It is a key indicator of inflation and economic health.',
     country: 'United States',
-    unit: 'Index'
+    unit: 'Percentage'
   },
   {
-    id: 6,
+    id: 4,
     title: 'Google Search Trends',
     value: '78.3',
     description: 'Public interest and search volume for financial terms',
